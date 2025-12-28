@@ -18,7 +18,8 @@ jobs:
       - run: npm install
 
       - name: Set GitHub Token
-        run: echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+        run: echo "GH_TOKEN=${{ secrets.GH_PAT }}" >> $GITHUB_ENV
+
 
       - run: node scripts/generateStats.js
       - run: node scripts/generateLangs.js
