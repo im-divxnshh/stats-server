@@ -1,16 +1,14 @@
-import fetch from "node-fetch";
 import fs from "fs";
+import fetch from "node-fetch";
 
 const username = "im-divxnshh";
 
 async function getUser() {
-  const res = await fetch(`https://api.github.com/users/${username}`);
-  return res.json();
+  return (await fetch(`https://api.github.com/users/${username}`)).json();
 }
 
 async function getRepos() {
-  const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
-  return res.json();
+  return (await fetch(`https://api.github.com/users/${username}/repos?per_page=100`)).json();
 }
 
 async function main() {
@@ -21,32 +19,50 @@ async function main() {
   repos.forEach(r => stars += r.stargazers_count);
 
   const svg = `
-<svg width="700" height="220" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" rx="15" fill="#0b1f0b" stroke="#00ff62" stroke-width="3"/>
+<svg width="820" height="260" xmlns="http://www.w3.org/2000/svg">
 
-  <text x="40" y="50" fill="#00ff62" font-size="30" font-weight="bold">
-    ${user.name}'s GitHub Stats
+  <!-- Gojo Infinity Glow -->
+  <defs>
+    <radialGradient id="gojo">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="60%" stop-color="#6d28d9"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </radialGradient>
+
+    <linearGradient id="zenitsu" x1="0" x2="1">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#ffdd33"/>
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" rx="18" fill="#0a0a0a" stroke="url(#zenitsu)" stroke-width="3" filter="url(#glow)"/>
+
+  <text x="40" y="65" fill="url(#zenitsu)" font-size="36" font-weight="900" filter="url(#glow)">
+    ⚡ Thunder × Infinity — GitHub Stats
   </text>
 
-  <text x="40" y="100" fill="#c2ffd5" font-size="22">
-    ⭐ Total Stars: ${stars}
-  </text>
+  <g font-family="monospace" font-size="24" fill="#fffbea">
+    <text x="40" y="120">⭐ Stars: <tspan fill="#ffdd33">${stars}</tspan></text>
+    <text x="40" y="160">📦 Repos: <tspan fill="#ffdd33">${user.public_repos}</tspan></text>
+    <text x="40" y="200">👥 Followers: <tspan fill="#ffdd33">${user.followers}</tspan></text>
 
-  <text x="40" y="140" fill="#c2ffd5" font-size="22">
-    📦 Public Repos: ${user.public_repos}
-  </text>
-
-  <text x="350" y="100" fill="#c2ffd5" font-size="22">
-    👥 Followers: ${user.followers}
-  </text>
-
-  <text x="350" y="140" fill="#c2ffd5" font-size="22">
-    🔁 Following: ${user.following}
-  </text>
-</svg>`;
+    <text x="420" y="120">🔥 Commits: <tspan fill="#ffdd33">AUTO</tspan></text>
+    <text x="420" y="160">⚔ PRs: <tspan fill="#ffdd33">AUTO</tspan></text>
+    <text x="420" y="200">🧩 Issues: <tspan fill="#ffdd33">AUTO</tspan></text>
+  </g>
+</svg>
+`;
 
   fs.writeFileSync("./svg/stats.svg", svg);
-  console.log("Stats Card Updated!");
+  console.log("⚡ stats card updated");
 }
 
 main();

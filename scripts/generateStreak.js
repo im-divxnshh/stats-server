@@ -1,19 +1,17 @@
-import fetch from "node-fetch";
 import fs from "fs";
+import fetch from "node-fetch";
 
 const username = "im-divxnshh";
 
 async function getContributions() {
-    const query = `
+  const query = `
   query {
     user(login: "${username}") {
       contributionsCollection {
         contributionCalendar {
-          totalContributions
           weeks {
             contributionDays {
               contributionCount
-              date
             }
           }
         }
@@ -21,53 +19,81 @@ async function getContributions() {
     }
   }`;
 
-    const res = await fetch("https://api.github.com/graphql", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.GH_TOKEN}`,
-        },
-        body: JSON.stringify({ query })
-    });
+  const res = await fetch("https://api.github.com/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.GH_TOKEN}`,
+    },
+    body: JSON.stringify({ query })
+  });
 
-    const json = await res.json();
-    return json.data.user.contributionsCollection.contributionCalendar.weeks;
+  const json = await res.json();
+  if (!json.data?.user) return null;
+  return json.data.user.contributionsCollection.contributionCalendar.weeks;
 }
 
-function calcStreak(weeks) {
-    let streak = 0;
-    let best = 0;
+function calculateStreak(weeks) {
+  let streak = 0;
+  let best = 0;
 
-    for (const w of weeks) {
-        for (const d of w.contributionDays) {
-            if (d.contributionCount > 0) {
-                streak++;
-                best = Math.max(best, streak);
-            } else {
-                streak = 0;
-            }
-        }
+  for (const week of weeks) {
+    for (const day of week.contributionDays) {
+      if (day.contributionCount > 0) {
+        streak++;
+        best = Math.max(best, streak);
+      } else streak = 0;
     }
+  }
 
-    return { streak, best };
+  return { streak, best };
 }
 
 async function main() {
-    const weeks = await getContributions();
-    const { streak, best } = calcStreak(weeks);
+  const weeks = await getContributions();
+  const { streak, best } = calculateStreak(weeks);
 
-    const svg = `
-<svg width="700" height="180" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" rx="15" fill="#0b1f0b" stroke="#00ff62" stroke-width="3"/>
-  <text x="40" y="50" fill="#00ff62" font-size="30" font-weight="bold">🔥 GitHub Streak</text>
+  const svg = `
+<svg width="820" height="250" xmlns="http://www.w3.org/2000/svg">
 
-  <text x="40" y="110" fill="#c2ffd5" font-size="22">Current Streak: ${streak} days</text>
-  <text x="40" y="150" fill="#c2ffd5" font-size="22">Best Streak: ${best} days</text>
+  <defs>
+    <radialGradient id="gojo">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="60%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </radialGradient>
+
+    <linearGradient id="zenitsu" x1="0" x2="1">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#ffdd33"/>
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" rx="18" fill="#0a0a0a"
+        stroke="url(#zenitsu)" stroke-width="3" filter="url(#glow)"/>
+
+  <text x="40" y="70" fill="url(#zenitsu)" font-size="34" font-weight="900" filter="url(#glow)">
+    ⚡ Thunder Breathing × Infinity — Streak
+  </text>
+
+  <g font-size="26" font-family="monospace" fill="#fff7d6">
+    <text x="40" y="130">Current Streak: <tspan fill="#ffdd33">${streak} days</tspan></text>
+    <text x="40" y="175">Best Streak: <tspan fill="#ffdd33">${best} days</tspan></text>
+  </g>
+
 </svg>
 `;
 
-    fs.writeFileSync("./svg/streak.svg", svg);
-    console.log("Streak Card Updated!");
+  fs.writeFileSync("./svg/streak.svg", svg);
+  console.log("⚡ streak card updated");
 }
 
 main();
