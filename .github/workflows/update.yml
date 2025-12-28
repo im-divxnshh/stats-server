@@ -1,0 +1,33 @@
+name: Update Cards
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # every 6 hours
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - run: npm install
+
+      - name: Set GitHub Token
+        run: echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
+      - run: node scripts/generateStats.js
+      - run: node scripts/generateLangs.js
+      - run: node scripts/generateStreak.js
+
+      - name: Commit & Push
+        run: |
+          git config user.name "GitHub Bot"
+          git config user.email "bot@github.com"
+          git add .
+          git commit -m "Auto update cards" || exit 0
+          git push
