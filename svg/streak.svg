@@ -30,7 +30,7 @@
   </text>
 
   <g font-size="26" font-family="monospace" fill="#fff7d6">
-    <text x="40" y="130">Current Streak: <tspan fill="#ffdd33">2 days</tspan></text>
+    <text x="40" y="130">Current Streak: <tspan fill="#ffdd33">0 days</tspan></text>
     <text x="40" y="175">Best Streak: <tspan fill="#ffdd33">5 days</tspan></text>
   </g>
 
