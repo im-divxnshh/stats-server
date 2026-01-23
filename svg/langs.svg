@@ -33,7 +33,7 @@
        fill="url(#zenitsu)" filter="url(#glow)"/>
     
       <text x="40" y="220" fill="#fffde7" font-size="24">HTML</text>
-      <rect x="220" y="198" width="180" height="20" rx="5"
+      <rect x="220" y="198" width="240" height="20" rx="5"
        fill="url(#zenitsu)" filter="url(#glow)"/>
     
 
